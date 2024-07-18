@@ -18,16 +18,32 @@
                 <div class="rd-navbar-nav-wrap">
                   <!-- RD Navbar Nav-->
                   <ul class="rd-navbar-nav">
-                    @if (!empty($sc_layoutsUrl['menu']))
-                    @foreach ($sc_layoutsUrl['menu'] as $url)
-                    <li class="rd-nav-item">
-                        <a class="rd-nav-link" {{ ($url->target =='_blank')?'target=_blank':''  }}
-                            href="{{ sc_url_render($url->url) }}">{{ sc_language_render($url->name) }}</a>
-                    </li>
+                    @if (!empty(sc_link_collection()['menu']))
+                    @foreach (sc_link_collection()['menu'] as $url)
+                      @if ($url['type'] != 'collection')
+                        <li class="rd-nav-item">
+                          <a class="rd-nav-link" {{ ($url['data']['target'] =='_blank')?'target=_blank':''  }}
+                              href="{{ sc_url_render($url['data']['url']) }}">{{ sc_language_render($url['data']['name']) }}</a>
+                        </li>
+                      @else
+                        @if (count($url['childs']))
+                        <li class="rd-nav-item"><a class="rd-nav-link" href="#"><i class="fa fa-lock"></i> {{ $url['data']['name'] }}</a>
+                          <ul class="rd-menu rd-navbar-dropdown">
+                              @foreach ($url['childs'] as $item)
+                              <li class="rd-dropdown-item">
+                                <a class="rd-nav-link" {{ ($item['data']['target'] =='_blank')?'target=_blank':''  }}
+                                  href="{{ sc_url_render($item['data']['url']) }}">{{ sc_language_render($item['data']['name']) }}</a>
+                              </li>
+                              @endforeach
+                          </ul>
+                      </li>
+                        @endif
+                      @endif
+
                     @endforeach
                     @endif
 
-                    @if (sc_config('link_account', null, 1))
+                    @if (sc_config('link_account', null, 1) && config('s-cart.ecommerce_mode', 1))
                     @guest
                     <li class="rd-nav-item"><a class="rd-nav-link" href="#"><i class="fa fa-lock"></i> {{ sc_language_render('front.account') }}</a>
                         <ul class="rd-menu rd-navbar-dropdown">
@@ -95,7 +111,7 @@
                     @endif
                     @endif
 
-                    @if (sc_config('link_currency', null, 1))
+                    @if (sc_config('link_currency', null, 1) && config('s-cart.ecommerce_mode', 1))
                     @if (count($sc_currencies)>1)
                     <li class="rd-nav-item">
                         <a class="rd-nav-link" href="#">
@@ -128,7 +144,7 @@
                       </div>
                     </form>
                   </div>
-                  @if (sc_config('link_cart', null, 1))
+                  @if (sc_config('link_cart', null, 1) && config('s-cart.ecommerce_mode', 1))
                   <!-- RD Navbar Basket-->
                   <div class="rd-navbar-basket-wrap">
                     <a href="{{ sc_route('cart') }}">

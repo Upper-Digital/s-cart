@@ -13,7 +13,7 @@ $layout_page = shop_auth
         <div class="col-12 col-sm-12">
             <h2>{{ sc_language_render('customer.password_forgot') }}</h2>
 
-            <form class="form-horizontal" method="POST" action="{{ sc_route('password.email') }}" id="form-process">
+            <form class="form-horizontal" method="POST" action="{{ sc_route('password.email') }}" id="sc_form-process">
                 {{ csrf_field() }}
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <label for="email" class="col-md-12 control-label"><i class="fas fa-envelope"></i>
@@ -28,7 +28,19 @@ $layout_page = shop_auth
                         <br />
                         @endif
                         {!! $viewCaptcha ?? ''!!}
-                        <button type="submit" name="SubmitLogin" class="button button-lg button-secondary" id="button-form-process">{{ sc_language_render('action.submit') }}</button>
+                        @php
+                        $dataButton = [
+                                'class' => '', 
+                                'id' =>  'sc_button-form-process',
+                                'type_w' => '',
+                                'type_t' => 'buy',
+                                'type_a' => '',
+                                'type' => 'submit',
+                                'name' => ''.sc_language_render('action.submit'),
+                                'html' => ''
+                            ];
+                        @endphp
+                        @include($sc_templatePath.'.common.button.button', $dataButton)
                     </div>
                 </div>
             </form>

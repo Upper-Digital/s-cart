@@ -30,6 +30,30 @@ class CmsContent extends Model
     {
         return $this->hasMany(CmsContentDescription::class, 'content_id', 'id');
     }
+
+    //Function get text description
+    public function getText()
+    {
+        return $this->descriptions()->where('lang', sc_get_locale())->first();
+    }
+    public function getTitle()
+    {
+        return $this->getText()->title ?? '';
+    }
+    public function getDescription()
+    {
+        return $this->getText()->description ?? '';
+    }
+    public function getKeyword()
+    {
+        return $this->getText()->keyword?? '';
+    }
+    public function getContent()
+    {
+        return $this->getText()->content;
+    }
+    //End  get text description
+
     public function images()
     {
         return $this->hasMany(CmsImage::class, 'content_id', 'id');
@@ -154,19 +178,22 @@ class CmsContent extends Model
 
     public function uninstall()
     {
-        if (Schema::hasTable($this->table)) {
-            Schema::drop($this->table);
+        $schema = Schema::connection(SC_CONNECTION);
+        
+        if ($schema->hasTable($this->table)) {
+            $schema->drop($this->table);
         }
-        if (Schema::hasTable($this->table.'_description')) {
-            Schema::drop($this->table.'_description');
+        if ($schema->hasTable($this->table.'_description')) {
+            $schema->drop($this->table.'_description');
         }
     }
 
     public function install()
     {
         $this->uninstall();
+        $schema = Schema::connection(SC_CONNECTION);
 
-        Schema::create($this->table, function (Blueprint $table) {
+        $schema->create($this->table, function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('category_id')->default(0);
             $table->string('image', 100)->nullable();
@@ -178,7 +205,7 @@ class CmsContent extends Model
             $table->timestamp('updated_at')->nullable();
         });
 
-        Schema::create($this->table.'_description', function (Blueprint $table) {
+        $schema->create($this->table.'_description', function (Blueprint $table) {
             $table->uuid('content_id');
             $table->string('lang', 10);
             $table->string('title', 300)->nullable();
@@ -267,27 +294,17 @@ class CmsContent extends Model
         $query = $query->where('status', 1)
             ->where('store_id', config('app.storeId'));
 
-        /**
-        Note: sc_moreWhere will remove in the next version
-         */
-        if (count($this->sc_moreWhere)) {
-            foreach ($this->sc_moreWhere as $key => $where) {
-                if (count($where)) {
-                    $query = $query->where($where[0], $where[1], $where[2]);
-                }
-            }
-        }
         $query = $this->processMoreQuery($query);
         
         if ($this->sc_random) {
             $query = $query->inRandomOrder();
         } else {
-            $ckeckSort = false;
+            $checkSort = false;
             if (is_array($this->sc_sort) && count($this->sc_sort)) {
                 foreach ($this->sc_sort as  $rowSort) {
                     if (is_array($rowSort) && count($rowSort) == 2) {
                         if ($rowSort[0] == 'sort') {
-                            $ckeckSort = true;
+                            $checkSort = true;
                         }
                         $query = $query->sort($rowSort[0], $rowSort[1]);
                     }
@@ -296,7 +313,7 @@ class CmsContent extends Model
         }
 
         //Use field "sort" if haven't above
-        if (!$ckeckSort) {
+        if (empty($checkSort)) {
             $query = $query->orderBy($this->getTable().'.sort', 'asc');
         }
         //Default, will sort id

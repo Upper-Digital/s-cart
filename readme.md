@@ -4,7 +4,7 @@
 <p align="center">Free open source e-commerce for business<br>
     <code><b>composer create-project s-cart/s-cart</b></code></p>
 <p align="center">
- <a href="https://s-cart.org">Home</a> | <a href="https://demo.s-cart.org">Demo</a> | <a href="https://s-cart.org/en/docs/master">Document</a>  | <a href="https://s-cart.org/en/developer/master">Document for Developer</a> | <a href="https://s-cart.org/en/developer/master/about-api-scart.html">API document</a> | <a href="https://s-cart.org/en/about.html">Features in S-Cart</a> | <a href="https://www.facebook.com/groups/scart.opensource">Group FB</a>
+ <a href="https://s-cart.org">Home</a> | <a href="https://demo.s-cart.org">Demo</a> | <a href="https://s-cart.org/en/docs/master">Document</a>  |  <a href="https://s-cart.org/en/docs/master/about-api-scart.html">API document</a> | <a href="https://s-cart.org/en/about.html">Features in S-Cart</a> | <a href="https://www.facebook.com/groups/scart.opensource">Group FB</a>
 </p>
 
 <p align="center">
@@ -54,7 +54,7 @@ Our goal is "Efficient and friendly for everyone":
 - Backup, restore
 - Activity log
 - And many other functions.
-Demo API: <a href="https://s-cart.org/en/developer/master/about-api-scart.html">https://s-cart.org/en/developer/master/about-api-scart.html</a>
+Demo API: <a href="https://s-cart.org/en/docs/master/about-api-scart.html">https://s-cart.org/en/docs/master/about-api-scart.html</a>
 👉Plugin pro:
 - Multi-vendor: <a href="https://s-cart.org/en/multi-vendor.html">https://s-cart.org/en/multi-vendor.html</a>
 - Multi-store: <a href="https://s-cart.org/en/multi-store.html">https://s-cart.org/en/multi-store.html</a>
@@ -73,11 +73,16 @@ S-Cart 7.x
 
 > Core laravel framework 9.x 
 
+S-Cart 8.x
+
+> Core laravel framework 10.x 
+
 ## Requirements:
 
 ```
-- PHP >= ^7.3|^8.0 (S-Cart 6.x)
-- PHP >= ^8.0.2 (S-Cart 7.x)
+- PHP ^7.3|^8.0 (S-Cart 6.x)
+- PHP ^8.0.2 (S-Cart 7.x)
+- PHP ^8.1 (S-Cart 8.x)
 - OpenSSL PHP Extension
 - PDO PHP Extension
 - Mbstring PHP Extension
@@ -95,18 +100,18 @@ S-Cart 7.x
 **Step1: Install last version S-cart**
 
 Option 1: **From composer**
-```
-composer create-project s-cart/s-cart
-```
+
+>composer create-project s-cart/s-cart
+
 
 Option 2: **From github**
-```
-git clone https://github.com/s-cart/s-cart.git
-```
+
+>git clone https://github.com/s-cart/s-cart.git
+
 Then, install vendor:
-```
-composer install
-```
+
+>composer install
+
 
 **Step2: Set writable permissions for the following directories:**
 
@@ -124,24 +129,23 @@ composer install
 
 **Step4: Install**
 
-Option 1: **Install automatic**
+------ Option 1: **Install automatic** ------------
 ```
-Access your-domain.com/install.php to install S-cart.
+1. Rename or delete the .env file if it exists.
+(You may encounter installation errors via "php artisan serve" if the .env file exists)
+2. Access your-domain.com/install.php to install S-cart.
 ```
 Then, remove or rename file *public/install.php*
 
-Option 2: **Manual installation**
+------ Option 2: **Manual installation** ------------
 
-If installing with link "install.php" unsuccessful, you can install it manually below.
 ```
-1: Create new database, then import file /vendor/s-cart/core/src/DB/s-cart-yyyy-mm-dd.sql to database.
-2: Rename or delete file public/install.php
-3: Copy file .env.example to .env if file .env not exist.
+1. Create new database, then import file /vendor/s-cart/core/src/DB/s-cart-yyyy-mm-dd.sql to database.
+2. Rename or delete file public/install.php
+3. Copy file .env.example to .env if file .env not exist.
 4: Generate API key if APP_KEY is null. 
 - Use command "php artisan key:generate"
-5: Generates the encryption keys
-  Use command "php artisan passport:keys"
-6: Config value of file .env:
+5: Config value of file .env:
 - APP_DEBUG=false (Set "false" is security)
 - DB_HOST=127.0.0.1 (Database host)
 - DB_PORT=3306 (Database port)
@@ -164,40 +168,54 @@ More detail for installation: <a href="https://s-cart.org/en/docs/master/install
 
 To view S-Cart version information
 
-`php artisan sc:info`
+>`php artisan sc:info`
 
 To update the core version of S-Cart:
 
-`composer update s-cart/core`
+>`composer update s-cart/core`
 
 Or you can use `php composer.phar update s-cart/core` if you don't have composer installed.
 
+Then, run `php artisan sc:update`
+
 To create a plugin:
 
-`php artisan sc:make plugin  --name=Group\PluginName`
+>`php artisan sc:make plugin  --name=Group\PluginName`
+
+To create a zip file plugin:
+
+>`php artisan sc:make plugin  --name=Group\PluginName --download=1`
 
 Detail: <a href="https://s-cart.org/en/docs/master/how-to-install-module-extension.html">HERE</a>
 
 Library of free plugins for S-Cart: <a href="https://s-cart.org/en/plugin.html">HERE</a>
 
+To create a template:
+
+>`php artisan sc:make template  --name=your-template-name`
+
+To create a zip file template:
+
+>`php artisan sc:make template  --name=your-template-name --download=1`
+
 To create data backup file (The sql file is stored in storage/backups):
 
-`php artisan sc:backup --path=abc.sql`
+>`php artisan sc:backup --path=abc.sql`
 
 To recover data:
 
-`php artisan sc:restore --path=abc.sql`
+>`php artisan sc:restore --path=abc.sql`
 
 To manually customize the admin page (<code>resources/views/admin + config/admin.php</code>):
 
-`php artisan sc:customize admin`
+>`php artisan sc:customize admin`
 
 This command will create new directories `resources/views/admin` and file `config/admin.php`
 After set the value `customize=true` in `config/admin.php` you can modify template admin. 
 
 To manually customize file config validation (<code>config/validation.php</code>):
 
-`php artisan sc:customize validation`
+>`php artisan sc:customize validation`
 
 More detail: https://s-cart.org/en/docs/master
 

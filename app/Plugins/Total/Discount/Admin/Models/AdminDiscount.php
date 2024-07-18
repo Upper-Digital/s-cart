@@ -15,11 +15,12 @@ class AdminDiscount extends PluginModel
      */
     public static function getDiscountAdmin($id) {
         $data =  self::where('id', $id);
+        $tableDiscount = (new AdminDiscount)->getTable();
         if (sc_check_multi_vendor_installed()) {
             if (session('adminStoreId') != SC_ID_ROOT) {
                 $tableDiscountStore = (new ShopDiscountStore)->getTable();
                 $data = $data->leftJoin($tableDiscountStore, $tableDiscountStore . '.discount_id', $tableDiscount . '.id');
-                $data = $data->where($tableDiscountStore, $tableDiscountStore . '.store_id', session('adminStoreId'));
+                $data = $data->where($tableDiscountStore . '.store_id', session('adminStoreId'));
             }
         }
         $data = $data->first();
@@ -36,16 +37,19 @@ class AdminDiscount extends PluginModel
     public function getDiscountListAdmin(array $dataSearch) {
         $sort_order       = $dataSearch['sort_order'] ?? '';
         $arrSort          = $dataSearch['arrSort'] ?? '';
+        $keyword          = $dataSearch['keyword'] ?? '';
         $discountList = (new AdminDiscount);
-
+        $tableDiscount = (new AdminDiscount)->getTable();
         if (sc_check_multi_vendor_installed()) {
             if (session('adminStoreId') != SC_ID_ROOT) {
                 $tableDiscountStore = (new ShopDiscountStore)->getTable();
                 $discountList = $discountList->leftJoin($tableDiscountStore, $tableDiscountStore . '.discount_id', $tableDiscount . '.id');
-                $discountList = $discountList->where($tableDiscountStore, $tableDiscountStore . '.store_id', session('adminStoreId'));
+                $discountList = $discountList->where($tableDiscountStore . '.store_id', session('adminStoreId'));
             }
         }
-
+        if ($keyword) {
+            $discountList = $discountList->where('code', 'like', '%'.$keyword.'%');
+        }
         if ($sort_order && array_key_exists($sort_order, $arrSort)) {
             $field = explode('__', $sort_order)[0];
             $sort_field = explode('__', $sort_order)[1];
@@ -92,7 +96,7 @@ class AdminDiscount extends PluginModel
             if (session('adminStoreId') != SC_ID_ROOT) {
                 $tableDiscountStore = (new ShopDiscountStore)->getTable();
                 $check = $check->leftJoin($tableDiscountStore, $tableDiscountStore . '.discount_id', $tableDiscount . '.id');
-                $check = $check->where($tableDiscountStore, $tableDiscountStore . '.store_id', session('adminStoreId'));
+                $check = $check->where($tableDiscountStore . '.store_id', session('adminStoreId'));
             }
         }
         if ($discountId) {
